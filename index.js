@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
+const cors = require('cors')
 
 let persons = [
     {
@@ -20,13 +21,13 @@ let persons = [
     },
     {
         "id": 4,
-        "name": "Mary Poppendieck",
+        "name": "Prueba Backend",
         "number": "39-23-6423122"
     }
 ]
 
 
-
+app.use(cors())
 app.use(express.json())
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
@@ -99,7 +100,7 @@ app.use((error, request, response, next) => {
     response.status(500).send('Something broke!')
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
