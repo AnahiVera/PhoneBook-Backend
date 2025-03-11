@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
-
-app.use(express.json())
+var morgan = require('morgan')
 
 let persons = [
     {
@@ -25,6 +24,19 @@ let persons = [
         "number": "39-23-6423122"
     }
 ]
+
+
+
+app.use(express.json())
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
+
+morgan.token('post-data', (req) => {
+    if (req.method === 'POST') {
+        return JSON.stringify(req.body);
+    }
+    return '-'; // Return '-' for non-POST requests
+});
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -52,14 +64,13 @@ app.get('/api/persons/:id', (request, response) => {
 
 const generateId = () => {
     const maxId = persons.length > 0
-      ? Math.max(...persons.map(n => n.id))
-      : 0
+        ? Math.max(...persons.map(n => n.id))
+        : 0
     return maxId + 1
-  }
+}
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    console.log(body)
 
     if (!body.name || !body.number) {
         return response.status(400).json({
@@ -81,6 +92,11 @@ app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
+})
+
+app.use((error, request, response, next) => {
+    console.error(error.stack)
+    response.status(500).send('Something broke!')
 })
 
 const PORT = 3001
