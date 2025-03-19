@@ -4,6 +4,8 @@ var morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 const app = express()
+const config = require('./utils/config')
+const logger = require('./utils/logger')
 
 // Middleware
 app.use(express.static('dist'))
@@ -114,7 +116,5 @@ app.use(errorHandler)
 
 
 // Start server
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+
+logger.info(`Server running on port ${config.PORT}`)
